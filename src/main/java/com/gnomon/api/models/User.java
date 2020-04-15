@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.NaturalId;
 
+import com.gnomon.api.agenda.models.AgendaConnection;
 import com.gnomon.api.models.audits.DateAudit;
 
 @Entity
@@ -51,6 +52,9 @@ public class User extends DateAudit {
 		inverseJoinColumns = @JoinColumn(name = "role_id")
 	)
 	private Set<Role> roles = new HashSet<Role>();
+	
+	@OneToMany(mappedBy = "user")
+	Set<AgendaConnection> agendaConnections;
 	
 	
 	public User() {}
