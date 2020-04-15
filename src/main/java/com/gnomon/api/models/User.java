@@ -28,17 +28,17 @@ public class User extends DateAudit {
 	private Long id;
 	
 	@NotBlank
-	@Size(min= 3, max = 32)
+	@Size(min = 3, max = 32)
 	private String name;
 	
 	@NaturalId
 	@NotBlank
-	@Size(min= 3, max = 64)
+	@Size(min = 3, max = 64)
 	@Email
 	private String email;
 	
 	@NotBlank
-	@Size(max=64)
+	@Size(min = 6, max=64)
 	private String password;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
