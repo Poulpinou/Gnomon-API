@@ -13,14 +13,17 @@ import org.hibernate.annotations.NaturalId;
 import com.gnomon.api.models.audits.DateAudit;
 
 @Entity
-@Table(name="users", uniqueConstraints = {
-	@UniqueConstraint(columnNames = {
-			"name"
-	}),
-	@UniqueConstraint(columnNames = {
-			"email"
-	})
-})
+@Table(
+	name="users", 
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {
+				"name"
+		}),
+		@UniqueConstraint(columnNames = {
+				"email"
+		})
+	}
+)
 public class User extends DateAudit {
 	
 	@Id
