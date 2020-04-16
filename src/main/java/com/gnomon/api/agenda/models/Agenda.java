@@ -19,9 +19,22 @@ public class Agenda extends UserDateAudit{
 	@Size(min = 3, max = 64)
 	private String name;
 	
+	@Size(max = 256)
+	private String description;
+	
+	private Boolean isPublic;
+
 	@OneToMany(mappedBy = "agenda")
 	Set<AgendaConnection> connections;
 
+	public Agenda() {}
+	
+	public Agenda(String name, String description, boolean isPublic) {
+		this.name = name;
+		this.description = description;
+		this.isPublic = isPublic;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -40,5 +53,25 @@ public class Agenda extends UserDateAudit{
 
 	public Set<AgendaConnection> getConnections() {
 		return connections;
+	}
+
+	public void setConnections(Set<AgendaConnection> connections) {
+		this.connections = connections;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Boolean isPublic() {
+		return isPublic;
+	}
+
+	public void setPublic(Boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 }

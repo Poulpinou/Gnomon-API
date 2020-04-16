@@ -3,6 +3,8 @@ package com.gnomon.api.agenda.models;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
 import com.gnomon.api.agenda.models.enums.AgendaConnectionType;
 import com.gnomon.api.agenda.models.keys.AgendaConnectionKey;
 import com.gnomon.api.models.User;
@@ -13,27 +15,30 @@ import com.gnomon.api.models.audits.DateAudit;
 public class AgendaConnection extends DateAudit  {
 	
 	@EmbeddedId
-	AgendaConnectionKey id;
+	private AgendaConnectionKey id;
 	
 	@ManyToOne
 	@MapsId("user_id")
 	@JoinColumn(name="user_id")
-	User user;
+	private User user;
 	
 	@ManyToOne
 	@MapsId("agenda_id")
 	@JoinColumn(name="agenda_id")
-	Agenda agenda;
+	private Agenda agenda;
 	
-	@NotBlank
+	private Boolean isShown;
+	
+	@Enumerated(EnumType.ORDINAL)
 	AgendaConnectionType connectionType;
 	
 	public AgendaConnection() {}
 	
-	public AgendaConnection(User user, Agenda agenda, AgendaConnectionType connectionType) {
+	public AgendaConnection(User user, Agenda agenda, AgendaConnectionType connectionType, boolean isShown) {
 		this.user = user;
 		this.agenda = agenda;
 		this.connectionType = connectionType;
+		this.isShown = isShown;
 		this.id = new AgendaConnectionKey(user.getId(), agenda.getId());
 	}
 
@@ -67,6 +72,14 @@ public class AgendaConnection extends DateAudit  {
 
 	public void setConnectionType(AgendaConnectionType connectionType) {
 		this.connectionType = connectionType;
+	}
+
+	public Boolean isShown() {
+		return isShown;
+	}
+
+	public void setShown(Boolean isShown) {
+		this.isShown = isShown;
 	}
 	
 	
