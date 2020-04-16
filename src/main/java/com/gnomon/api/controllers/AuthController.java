@@ -7,28 +7,23 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.gnomon.api.exceptions.AppException;
-import com.gnomon.api.models.Role;
 import com.gnomon.api.models.User;
-import com.gnomon.api.models.enums.RoleName;
 import com.gnomon.api.payloads.requests.LoginRequest;
 import com.gnomon.api.payloads.requests.SignUpRequest;
 import com.gnomon.api.payloads.responses.ApiResponse;
 import com.gnomon.api.payloads.responses.JwtAuthenticationResponse;
-import com.gnomon.api.repositories.RoleRepository;
 import com.gnomon.api.repositories.UserRepository;
 import com.gnomon.api.security.JwtTokenProvider;
+import com.gnomon.api.services.UserService;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -39,12 +34,9 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
-
+    
     @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    UserService userService;
 
     @Autowired
     JwtTokenProvider tokenProvider;
@@ -75,25 +67,11 @@ public class AuthController {
             return new ResponseEntity<>(new ApiResponse(false, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
-        User user = new User(
-    		signUpRequest.getName(),
-            signUpRequest.getEmail(), 
-            signUpRequest.getPassword()
-        );
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        Role userRole = roleRepository.findByName(RoleName.USER)
-                .orElseThrow(() -> new AppException("User Role not set."));
-
-        user.setRoles(Collections.singleton(userRole));
-
-        User result = userRepository.save(user);
+        User user = userService.createAccount(signUpRequest);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/users/{username}")
-                .buildAndExpand(result.getName())
+                .buildAndExpand(user.getName())
                 .toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
