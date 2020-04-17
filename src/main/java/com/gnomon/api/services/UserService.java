@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.gnomon.api.agenda.models.Agenda;
-import com.gnomon.api.agenda.models.enums.AgendaConnectionType;
 import com.gnomon.api.agenda.repositories.AgendaRepository;
 import com.gnomon.api.agenda.services.AgendaService;
 import com.gnomon.api.exceptions.AppException;

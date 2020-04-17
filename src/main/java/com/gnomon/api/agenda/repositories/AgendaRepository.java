@@ -1,5 +1,6 @@
 package com.gnomon.api.agenda.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,5 +14,6 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
 	
 	Page<Agenda> findByCreatedBy(Long userId, Pageable pageable);
 
-    long countByCreatedBy(Long userId);
+    List<Agenda> findByIdIn(List<Long> agendaIds);
+    
 }

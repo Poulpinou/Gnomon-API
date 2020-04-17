@@ -1,16 +1,20 @@
 package com.gnomon.api.agenda.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gnomon.api.agenda.models.Agenda;
 import com.gnomon.api.agenda.models.AgendaConnection;
 import com.gnomon.api.agenda.models.enums.AgendaConnectionType;
+import com.gnomon.api.agenda.payloads.responses.AgendaSummary;
 import com.gnomon.api.agenda.repositories.AgendaConnectionRepository;
 import com.gnomon.api.agenda.repositories.AgendaRepository;
 import com.gnomon.api.exceptions.BadRequestException;
 import com.gnomon.api.models.User;
-import com.gnomon.api.repositories.UserRepository;
+import com.gnomon.api.security.UserPrincipal;
 
 @Service
 public class AgendaService {
@@ -20,8 +24,16 @@ public class AgendaService {
 	@Autowired
 	private AgendaConnectionRepository connectionRepository;
 	
-	@Autowired
-	private UserRepository userRepository;
+	public List<AgendaSummary> getAllAgendasForUser(UserPrincipal user){
+		List<Long> agendaIds = connectionRepository.findAgendaIdsByUserId(user.getId());
+		List<Agenda> agendas = agendaRepository.findByIdIn(agendaIds);
+		
+		List<AgendaSummary> agendaSummaries = agendas.stream().map(agenda -> {
+			return new AgendaSummary(agenda);
+		}).collect(Collectors.toList());
+		
+		return agendaSummaries;
+	}
 	
 	public AgendaConnection connectUserToAgenda(User user, Agenda agenda, AgendaConnectionType connectionType) {
 		

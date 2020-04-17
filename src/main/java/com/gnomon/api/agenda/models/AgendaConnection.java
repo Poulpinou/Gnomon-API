@@ -1,9 +1,6 @@
 package com.gnomon.api.agenda.models;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import com.gnomon.api.agenda.models.enums.AgendaConnectionType;
 import com.gnomon.api.agenda.models.keys.AgendaConnectionKey;
