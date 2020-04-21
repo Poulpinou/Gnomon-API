@@ -29,7 +29,7 @@ public class Agenda extends UserDateAudit{
 
 	public Agenda() {}
 	
-	public Agenda(String name, String description, boolean isPublic) {
+	public Agenda(String name, String description, Boolean isPublic) {
 		this.name = name;
 		this.description = description;
 		this.isPublic = isPublic;
