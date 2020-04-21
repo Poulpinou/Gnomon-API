@@ -56,3 +56,4 @@ public class AgendaSummary extends UserDatedResponse<Agenda> {
 		this.isPublic = isPublic;
 	}
 }
+

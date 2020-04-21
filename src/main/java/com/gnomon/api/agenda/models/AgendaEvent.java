@@ -1,6 +1,7 @@
 package com.gnomon.api.agenda.models;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -29,15 +30,73 @@ public class AgendaEvent extends UserDateAudit {
 	private String description;
 	
 	@NotBlank
-	Instant date;
+	LocalDateTime date;
 	
 	@Enumerated(EnumType.STRING)
 	RecurrenceRule recurrenceRule;
 	
 	@NotBlank
-	Instant lastRecurrence;
+	LocalDateTime lastRecurrence;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Agenda getAgenda() {
+		return agenda;
+	}
+
+	public void setAgenda(Agenda agenda) {
+		this.agenda = agenda;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public LocalDateTime getFullDate() {
+		return date;
+	}
+
+	public void setDate(LocalDateTime date) {
+		this.date = date;
+	}
+
+	public RecurrenceRule getRecurrenceRule() {
+		return recurrenceRule;
+	}
+
+	public void setRecurrenceRule(RecurrenceRule recurrenceRule) {
+		this.recurrenceRule = recurrenceRule;
+	}
+
+	public LocalDateTime getLastRecurrence() {
+		return lastRecurrence;
+	}
+
+	public void setLastRecurrence(LocalDateTime lastRecurrence) {
+		this.lastRecurrence = lastRecurrence;
+	}
 	
-	
+	public LocalDate getDate() {
+		return date.toLocalDate();
+	}
 	
 	
 	
