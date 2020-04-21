@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gnomon.api.AppConstants;
-import com.gnomon.api.agenda.models.AgendaEvent;
+import com.gnomon.api.agenda.payloads.responses.AgendaEventSummary;
 import com.gnomon.api.agenda.payloads.responses.Day;
 import com.gnomon.api.agenda.repositories.AgendaEventRepository;
 import com.gnomon.api.agenda.services.AgendaEventService;
@@ -49,8 +49,13 @@ public class AgendaEventController {
 	}
 	
 	@GetMapping("/{eventId}")
-    public AgendaEvent getEventById(@CurrentUser UserPrincipal currentUser, @PathVariable Long eventId) {
-        return eventRepository.findById(eventId)
-        		.orElseThrow(() -> new ResourceNotFoundException("Agenda Event", "Id", eventId));
+    public AgendaEventSummary getEventById(
+    		@CurrentUser UserPrincipal currentUser, 
+    		@PathVariable Long eventId
+		) {
+        return new AgendaEventSummary(
+        		eventRepository.findById(eventId)
+        		.orElseThrow(() -> new ResourceNotFoundException("Agenda Event", "Id", eventId))
+    		);
     }
 }

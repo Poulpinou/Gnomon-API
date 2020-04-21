@@ -11,7 +11,7 @@ public class AgendaRequest {
 	@Size(max = 256)
 	private String description;
 	
-	private Boolean isPublic;
+	private boolean isPublic;
 
 	public String getName() {
 		return name;
@@ -29,11 +29,11 @@ public class AgendaRequest {
 		this.description = description;
 	}
 
-	public Boolean isPublic() {
+	public boolean isPublic() {
 		return isPublic;
 	}
 
-	public void setPublic(Boolean isPublic) {
+	public void setPublic(boolean isPublic) {
 		this.isPublic = isPublic;
 	}
 }

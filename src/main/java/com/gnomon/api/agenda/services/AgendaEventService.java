@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.gnomon.api.agenda.models.AgendaEvent;
 import com.gnomon.api.agenda.payloads.responses.Day;
-import com.gnomon.api.agenda.payloads.responses.EventSummary;
+import com.gnomon.api.agenda.payloads.responses.AgendaEventSummary;
 import com.gnomon.api.agenda.repositories.AgendaConnectionRepository;
 import com.gnomon.api.agenda.repositories.AgendaEventRepository;
 import com.gnomon.api.payloads.responses.PagedResponse;
@@ -55,7 +55,7 @@ public class AgendaEventService {
 					new Day(
 						date, 
 						eventList.stream().map(event -> {
-							return new EventSummary(event);
+							return new AgendaEventSummary(event);
 						}).collect(Collectors.toList())
 					)
 				);

@@ -7,14 +7,14 @@ import java.util.List;
 public class Day implements Comparable<Day> {
 	
 	LocalDate date;
-	List<EventSummary> events;
+	List<AgendaEventSummary> events;
 	
 	public Day(LocalDate date) {
 		this.date = date;
-		this.events = new ArrayList<EventSummary>();
+		this.events = new ArrayList<AgendaEventSummary>();
 	}
 	
-	public Day(LocalDate date, List<EventSummary> events) {
+	public Day(LocalDate date, List<AgendaEventSummary> events) {
 		this.date = date;
 		this.events = events;
 	}
@@ -27,11 +27,11 @@ public class Day implements Comparable<Day> {
 		this.date = date;
 	}
 
-	public List<EventSummary> getEvents() {
+	public List<AgendaEventSummary> getEvents() {
 		return events;
 	}
 
-	public void setEvents(List<EventSummary> events) {
+	public void setEvents(List<AgendaEventSummary> events) {
 		this.events = events;
 	}
 
