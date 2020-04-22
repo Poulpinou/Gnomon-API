@@ -6,8 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import org.springframework.boot.context.properties.ConstructorBinding;
-
 import com.gnomon.api.models.audits.UserDateAudit;
 
 import lombok.Data;

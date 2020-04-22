@@ -37,7 +37,7 @@ public class AgendaController {
 	
 	@GetMapping("/connected")
 	public List<AgendaSummary> getMyAgendas(@CurrentUser UserPrincipal currentUser){
-		return agendaService.getAllAgendaSummariesByUserId(currentUser.getId());
+		return agendaService.getAllAgendasByUserId(currentUser.getId());
 	}
 	
 	@GetMapping("/main")

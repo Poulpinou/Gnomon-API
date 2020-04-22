@@ -7,7 +7,6 @@ import com.gnomon.api.agenda.models.keys.AgendaConnectionKey;
 import com.gnomon.api.models.User;
 import com.gnomon.api.models.audits.DateAudit;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
