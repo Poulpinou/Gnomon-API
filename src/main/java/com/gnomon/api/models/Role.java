@@ -5,6 +5,7 @@ import org.hibernate.annotations.NaturalId;
 import com.gnomon.api.models.enums.RoleName;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "roles")
 @Data
+@NoArgsConstructor
 public class Role {
 
 	@Id

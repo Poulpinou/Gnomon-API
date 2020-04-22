@@ -6,15 +6,19 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.springframework.boot.context.properties.ConstructorBinding;
+
 import com.gnomon.api.models.audits.UserDateAudit;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 @Table(name="agendas")
 public class Agenda extends UserDateAudit{
 	@Id

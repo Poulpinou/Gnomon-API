@@ -7,13 +7,16 @@ import com.gnomon.api.agenda.models.keys.AgendaConnectionKey;
 import com.gnomon.api.models.User;
 import com.gnomon.api.models.audits.DateAudit;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 @Table(name="agenda_connections")
 public class AgendaConnection extends DateAudit  {
 	

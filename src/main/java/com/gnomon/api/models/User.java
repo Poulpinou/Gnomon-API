@@ -15,6 +15,7 @@ import com.gnomon.api.models.audits.DateAudit;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
@@ -31,6 +32,7 @@ import lombok.NonNull;
 )
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class User extends DateAudit {
 	
 	@Id
@@ -64,4 +66,10 @@ public class User extends DateAudit {
 	
 	@OneToMany(mappedBy = "user")
 	private Set<AgendaConnection> agendaConnections;
+
+	public User(String name, String email, String password) {	
+		this.name = name;	
+		this.email = email;	
+		this.password = password;	
+	}
 }

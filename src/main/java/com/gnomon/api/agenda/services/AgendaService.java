@@ -17,49 +17,62 @@ import com.gnomon.api.exceptions.BadRequestException;
 import com.gnomon.api.exceptions.NotAllowedException;
 import com.gnomon.api.exceptions.ResourceNotFoundException;
 import com.gnomon.api.models.User;
+import com.gnomon.api.repositories.UserRepository;
+import com.gnomon.api.security.UserPrincipal;
+import com.gnomon.api.services.UserService;
 
 @Service
 public class AgendaService {
-	@Autowired
+
 	private AgendaRepository agendaRepository;
 	
-	@Autowired
 	private AgendaConnectionRepository connectionRepository;
 	
+	private UserRepository userRepository;
+	
+	@Autowired
+	public AgendaService(
+			AgendaRepository agendaRepository,
+			AgendaConnectionRepository connectionRepository,
+			UserRepository userRepository
+		){
+		this.agendaRepository = agendaRepository;
+		this.connectionRepository = connectionRepository;
+		this.userRepository = userRepository;
+	}
+	
 	public List<AgendaSummary> getAllAgendaSummariesByUserId(Long userId){
-		List<AgendaSummary> agendaSummaries = getAllAgendasByUserId(userId).stream().map(agenda -> {
-			return new AgendaSummary(agenda);
-		}).collect(Collectors.toList());
-		
-		return agendaSummaries;
-	}
-	
-	public AgendaSummary getAgendaSummaryById(Long agendaId, Long userId) throws ResourceNotFoundException, NotAllowedException {
-		return new AgendaSummary(getAgendaById(agendaId, userId));
-	}
-	
-	public List<Agenda> getAllAgendasByUserId(Long userId){
 		List<Long> agendaIds = connectionRepository.findAgendaIdsByUserId(userId);
 		List<Agenda> agendas = agendaRepository.findByIdIn(agendaIds);
-		return agendas;
+		
+		return agendas.stream()
+				.map(AgendaSummary::new)
+				.collect(Collectors.toList());
 	}
 	
-	public Agenda getAgendaById(Long agendaId, Long userId) throws ResourceNotFoundException, NotAllowedException {
+	public AgendaSummary getMainAgenda(Long userId) {
+		AgendaConnection connection = connectionRepository.findByUserIdAndConnectionType(userId, AgendaConnectionType.MAIN)
+				.orElseThrow( () -> new ResourceNotFoundException("Main Agenda", "userId", userId)) ;
+
+		return new AgendaSummary(connection.getAgenda());
+	}
+	
+	public AgendaSummary getAgendaById(Long agendaId, Long userId) throws ResourceNotFoundException, NotAllowedException {
 		AgendaConnection connection = connectionRepository.findByUserIdAndAgendaId(userId, agendaId)
 				.orElseThrow(() -> new ResourceNotFoundException("Agenda", "agendaId", agendaId));
 		
 		Agenda agenda = connection.getAgenda();
 		
-		if(!agenda.isShared() && connection.getConnectionType() == AgendaConnectionType.VIEWER) {
-			throw new NotAllowedException("target Agenda is private");
-		}
+		if(!agenda.isShared() && connection.getConnectionType() == AgendaConnectionType.VIEWER)
+			throw new NotAllowedException("target Agenda is private");		
 		
-		return agenda;
+		return new AgendaSummary(agenda);
 	}
 	
-	public AgendaConnection connectUserToAgenda(User user, Agenda agenda, AgendaConnectionType connectionType) throws BadRequestException {
+	public AgendaConnection connectUserToAgenda(Long userId, Agenda agenda, AgendaConnectionType connectionType) throws BadRequestException {		
+		User user = userRepository.getOne(userId);
 		
-		if(connectionRepository.existsByUserIdAndAgendaId(user.getId(), agenda.getId())) {
+		if(connectionRepository.existsByUserIdAndAgendaId(userId, agenda.getId())) {
 			throw new BadRequestException(user.getName() + " is already connected to " + agenda.getName());
 		}
 		
@@ -79,7 +92,7 @@ public class AgendaService {
 		return connectionRepository.save(connection);
 	}
 	
-	public Agenda createAgenda(User user, AgendaRequest request) throws BadRequestException {
+	public void createAgenda(Long userId, AgendaRequest request) throws BadRequestException {
 		Agenda agenda = new Agenda(
         	request.getName(),
         	request.getDescription(),
@@ -88,25 +101,22 @@ public class AgendaService {
 		
 		agenda = agendaRepository.save(agenda);
 		
-		connectUserToAgenda(user, agenda, AgendaConnectionType.OWNER);
-		
-		return agenda;
+		connectUserToAgenda(userId, agenda, AgendaConnectionType.OWNER);
 	}
 	
-	public Agenda updateAgenda(Long userId, Long agendaId, AgendaRequest request) throws ResourceNotFoundException, NotAllowedException {
+	public void updateAgenda(Long userId, Long agendaId, AgendaRequest request) throws ResourceNotFoundException, NotAllowedException {
 		AgendaConnection connection = connectionRepository.findByUserIdAndAgendaId(userId, agendaId)
 				.orElseThrow( () -> new ResourceNotFoundException("AgendaConnection", "userId | agendaId", userId + " | " + agendaId));
 		
-		if(connection.getConnectionType() == AgendaConnectionType.VIEWER) {
+		if(connection.getConnectionType() == AgendaConnectionType.VIEWER)
 			throw new NotAllowedException("user doesn't own this agenda");
-		}
 		
 		Agenda agenda = connection.getAgenda();
 		agenda.setName(request.getName());
 		agenda.setDescription(request.getDescription());
 		agenda.setShared(request.isShared());
 			
-		return agendaRepository.save(agenda);
+		agendaRepository.save(agenda);
 	}
 	
 	public void deleteAgenda(Long userId, Long agendaId) throws ResourceNotFoundException, NotAllowedException{		
@@ -114,34 +124,29 @@ public class AgendaService {
 				.orElseThrow( () -> new ResourceNotFoundException("AgendaConnection", "userId | agendaId", userId + " | " + agendaId));
 		
 		if(connection.getConnectionType() != AgendaConnectionType.OWNER) {
-			if(connection.getConnectionType() == AgendaConnectionType.MAIN) {
+			if(connection.getConnectionType() == AgendaConnectionType.MAIN)
 				throw new NotAllowedException("impossible to delete a main agenda");
-			}
-			else{
+			else
 				throw new NotAllowedException("user doesn't own this agenda");
-			}
-			
 		}
 		
-		Agenda agenda = connection.getAgenda();
-		
-		agendaRepository.delete(agenda);
+		agendaRepository.delete(connection.getAgenda());
 	}
 	
-	public Agenda createMainAgendaForUser(User user) throws BadRequestException {
-		
+	public Agenda createMainAgendaForUser(User user) throws BadRequestException {		
 		Agenda agenda = new Agenda(
         	"Mon agenda",
         	"Agenda personnel de " + user.getName(),
         	false
 		);
 		
+		//User is not connected yet, so we have to force those fields
 		agenda.setCreatedBy(user.getId());
 		agenda.setUpdatedBy(user.getId());
         
         agenda = agendaRepository.save(agenda);
         
-        connectUserToAgenda(user, agenda, AgendaConnectionType.MAIN);
+        connectUserToAgenda(user.getId(), agenda, AgendaConnectionType.MAIN);
         
         return agenda;
 	}
