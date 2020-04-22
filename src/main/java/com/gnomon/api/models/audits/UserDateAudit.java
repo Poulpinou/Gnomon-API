@@ -1,6 +1,10 @@
 package com.gnomon.api.models.audits;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
@@ -12,6 +16,8 @@ import javax.persistence.MappedSuperclass;
     value = {"createdBy", "updatedBy"},
     allowGetters = true
 )
+@Data
+@EqualsAndHashCode(callSuper = true)
 public abstract class UserDateAudit extends DateAudit {
     @CreatedBy
     @Column(updatable = false)
@@ -19,20 +25,4 @@ public abstract class UserDateAudit extends DateAudit {
 
     @LastModifiedBy
     private Long updatedBy;
-
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Long getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Long updatedBy) {
-        this.updatedBy = updatedBy;
-    }
 }

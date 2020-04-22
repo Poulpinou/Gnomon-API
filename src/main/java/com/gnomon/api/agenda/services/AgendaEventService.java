@@ -49,14 +49,14 @@ public class AgendaEventService {
 		List<Day> days = new ArrayList<Day>();
 		
 		events.stream()
-			.collect(Collectors.groupingBy(AgendaEvent::getDate))
+			.collect(Collectors.groupingBy(AgendaEvent::getDay))
 			.forEach((date, eventList) -> {
 				days.add(
 					new Day(
 						date, 
-						eventList.stream().map(event -> {
-							return new AgendaEventSummary(event);
-						}).collect(Collectors.toList())
+						eventList.stream()
+							.map(AgendaEventSummary::new)
+							.collect(Collectors.toList())
 					)
 				);
 			});

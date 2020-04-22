@@ -4,6 +4,11 @@ import java.time.Instant;
 
 import com.gnomon.api.models.audits.DateAudit;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 public abstract class DatedResponse<T extends DateAudit> extends MappedResponse<T>{
 	private Instant createdAt;
 
@@ -14,24 +19,8 @@ public abstract class DatedResponse<T extends DateAudit> extends MappedResponse<
     }
     
     @Override
-    protected void MapObjectToResponse(T objectToMap) {
+    protected void mapObjectToResponse(T objectToMap) {
     	this.createdAt = objectToMap.getCreatedAt();
     	this.updatedAt = objectToMap.getUpdatedAt();
     }
-
-	public Instant getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Instant createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Instant getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Instant updatedAt) {
-		this.updatedAt = updatedAt;
-	}
 }

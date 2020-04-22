@@ -50,7 +50,7 @@ public class AgendaService {
 		
 		Agenda agenda = connection.getAgenda();
 		
-		if(!agenda.isPublic() && connection.getConnectionType() == AgendaConnectionType.VIEWER) {
+		if(!agenda.isShared() && connection.getConnectionType() == AgendaConnectionType.VIEWER) {
 			throw new NotAllowedException("target Agenda is private");
 		}
 		
@@ -83,7 +83,7 @@ public class AgendaService {
 		Agenda agenda = new Agenda(
         	request.getName(),
         	request.getDescription(),
-        	request.isPublic()
+        	request.isShared()
 		);
 		
 		agenda = agendaRepository.save(agenda);
@@ -104,7 +104,7 @@ public class AgendaService {
 		Agenda agenda = connection.getAgenda();
 		agenda.setName(request.getName());
 		agenda.setDescription(request.getDescription());
-		agenda.setPublic(request.isPublic());
+		agenda.setShared(request.isShared());
 			
 		return agendaRepository.save(agenda);
 	}

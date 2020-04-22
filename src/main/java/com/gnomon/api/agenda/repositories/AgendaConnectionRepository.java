@@ -26,9 +26,9 @@ public interface AgendaConnectionRepository extends JpaRepository<AgendaConnecti
 	
 	List<AgendaConnection> findAllByUserId(Long userId);
 	
-	@Query("SELECT a.id FROM AgendaConnection c INNER JOIN Agenda a ON c.agenda.id  = a.id WHERE c.user.id = :userId AND ( a.isPublic = TRUE OR NOT c.connectionType = 2 )")
+	@Query("SELECT a.id FROM AgendaConnection c INNER JOIN Agenda a ON c.agenda.id  = a.id WHERE c.user.id = :userId AND ( a.isShared = TRUE OR NOT c.connectionType = AgendaConnectionType.VIEWER )")
 	List<Long> findAgendaIdsByUserId(@Param("userId") Long userId);
 	
-	@Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM AgendaConnection c WHERE c.user.id = :userId AND c.agenda.id = :agendaId AND c.connectionType = 1")
+	@Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM AgendaConnection c WHERE c.user.id = :userId AND c.agenda.id = :agendaId AND c.connectionType = AgendaConnectionType.OWNER ")
 	boolean agendaIsOwned(@Param("userId") Long userId, @Param("agendaId") Long agendaId);
 }

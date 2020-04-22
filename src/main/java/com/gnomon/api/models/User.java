@@ -13,6 +13,10 @@ import org.hibernate.annotations.NaturalId;
 import com.gnomon.api.agenda.models.AgendaConnection;
 import com.gnomon.api.models.audits.DateAudit;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+
 @Entity
 @Table(
 	name="users", 
@@ -25,6 +29,8 @@ import com.gnomon.api.models.audits.DateAudit;
 		})
 	}
 )
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class User extends DateAudit {
 	
 	@Id
@@ -33,16 +39,19 @@ public class User extends DateAudit {
 	
 	@NotBlank
 	@Size(min = 3, max = 32)
+	@NonNull
 	private String name;
 	
 	@NaturalId
 	@NotBlank
 	@Size(min = 3, max = 64)
 	@Email
+	@NonNull
 	private String email;
 	
 	@NotBlank
 	@Size(min = 6, max=64)
+	@NonNull
 	private String password;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -54,55 +63,5 @@ public class User extends DateAudit {
 	private Set<Role> roles = new HashSet<Role>();
 	
 	@OneToMany(mappedBy = "user")
-	Set<AgendaConnection> agendaConnections;
-	
-	
-	public User() {}
-	
-	public User(String name, String email, String password) {
-		this.name = name;
-		this.email = email;
-		this.password = password;
-	}
-
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
+	private Set<AgendaConnection> agendaConnections;
 }

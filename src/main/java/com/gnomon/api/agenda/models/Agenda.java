@@ -8,7 +8,13 @@ import javax.validation.constraints.Size;
 
 import com.gnomon.api.models.audits.UserDateAudit;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+
 @Entity
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Table(name="agendas")
 public class Agenda extends UserDateAudit{
 	@Id
@@ -16,62 +22,21 @@ public class Agenda extends UserDateAudit{
 	private Long id;
 	
 	@NotBlank
+	@NonNull
 	@Size(min = 3, max = 64)
 	private String name;
 	
 	@Size(max = 256)
 	private String description;
 	
-	private Boolean isPublic;
+	private boolean shared;
 
 	@OneToMany(mappedBy = "agenda")
-	Set<AgendaConnection> connections;
-
-	public Agenda() {}
+	private Set<AgendaConnection> connections;
 	
-	public Agenda(String name, String description, Boolean isPublic) {
+	public Agenda(String name, String description, boolean isShared) {
 		this.name = name;
 		this.description = description;
-		this.isPublic = isPublic;
-	}
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Set<AgendaConnection> getConnections() {
-		return connections;
-	}
-
-	public void setConnections(Set<AgendaConnection> connections) {
-		this.connections = connections;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Boolean isPublic() {
-		return isPublic;
-	}
-
-	public void setPublic(Boolean isPublic) {
-		this.isPublic = isPublic;
+		this.shared = isShared;
 	}
 }
