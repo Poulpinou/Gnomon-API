@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.ToString;
 
 @Entity
 @Table(
@@ -31,8 +32,9 @@ import lombok.NonNull;
 	}
 )
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false, exclude = {"agendaConnections"})
 @NoArgsConstructor
+@ToString(exclude = {"agendaConnections"})
 public class User extends DateAudit {
 	
 	@Id

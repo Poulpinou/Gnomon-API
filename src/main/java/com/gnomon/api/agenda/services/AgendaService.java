@@ -48,7 +48,7 @@ public class AgendaService {
 	
 	public List<AgendaSummary> getAllAgendasByUserId(Long userId){
 		final User user = userRepository.getOne(userId);
-		List<Agenda> agendas = agendaRepository.findAll(where(isVisibleByUser(user)));
+		final List<Agenda> agendas = agendaRepository.findAll(where(isVisibleByUser(user)));
 		
 		return agendas.stream()
 				.map(AgendaSummary::new)

@@ -12,8 +12,6 @@ import lombok.EqualsAndHashCode;
 public class AgendaEventSummary extends UserDatedResponse<AgendaEvent> {
 	private Long id;
 	
-	private Long agendaId;
-	
 	private String title;
 	
 	private String description;
@@ -29,7 +27,6 @@ public class AgendaEventSummary extends UserDatedResponse<AgendaEvent> {
 		super.mapObjectToResponse(event);
 		
 		this.id = event.getId();
-		this.agendaId = event.getAgenda().getId();
 		this.title = event.getTitle();
 		this.description = event.getDescription();
 		this.date = event.getDate();

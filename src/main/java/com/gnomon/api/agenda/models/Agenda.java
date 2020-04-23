@@ -1,22 +1,30 @@
 package com.gnomon.api.agenda.models;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.gnomon.api.agenda.models.enums.RecurrenceRule;
 import com.gnomon.api.models.audits.UserDateAudit;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = false, exclude = {"connections","events"})
 @NoArgsConstructor
+@ToString(exclude = {"connections","events"})
 @Table(name="agendas")
 public class Agenda extends UserDateAudit{
 	@Id
@@ -35,6 +43,14 @@ public class Agenda extends UserDateAudit{
 
 	@OneToMany(mappedBy = "agenda")
 	private Set<AgendaConnection> connections;
+	
+	@ManyToMany
+	@JoinTable(
+		name = "agendas_events", 
+		joinColumns = @JoinColumn(name = "agenda_id"), 
+		inverseJoinColumns = @JoinColumn(name = "event_id")
+	)
+	private List<AgendaEvent> events;
 	
 	public Agenda(String name, String description, boolean isShared) {
 		this.name = name;
