@@ -2,7 +2,6 @@ package com.gnomon.api.agenda.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -14,15 +13,12 @@ import com.gnomon.api.models.audits.UserDateAudit;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false, exclude = {"agendas"})
 @ToString(exclude = {"agendas"})
@@ -33,7 +29,7 @@ public class AgendaEvent extends UserDateAudit {
 	private Long id;
 	
 	@ManyToMany(mappedBy = "events")
-	private List<Agenda> agendas;
+	private Set<Agenda> agendas;
 	
 	@NotBlank
 	@Size(min = 3, max = 64)

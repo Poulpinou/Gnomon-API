@@ -2,11 +2,6 @@ package com.gnomon.api.agenda.utils.specs;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
-
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -16,10 +11,7 @@ import com.gnomon.api.agenda.models.AgendaEvent;
 public class AgendaEventSpecifications {
 	
 	public static Specification<AgendaEvent> byAgendas(List<Agenda> agendas){
-		return (root, query, cb) -> {
-			final Path<Agenda> group = root.<Agenda>get("agendas");
-		    return group.in(agendas);
-		};
+		return (root, query, cb) -> root.join("agendas").in(agendas);
 	}
 	
 	public static Specification<AgendaEvent> isBetweenDates(LocalDate from, LocalDate to){

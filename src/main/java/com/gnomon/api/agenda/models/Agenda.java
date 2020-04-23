@@ -1,6 +1,5 @@
 package com.gnomon.api.agenda.models;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -8,20 +7,16 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.gnomon.api.agenda.models.enums.RecurrenceRule;
 import com.gnomon.api.models.audits.UserDateAudit;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(callSuper = false, exclude = {"connections","events"})
 @NoArgsConstructor
 @ToString(exclude = {"connections","events"})
