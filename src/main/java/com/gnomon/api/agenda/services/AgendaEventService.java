@@ -1,13 +1,10 @@
 package com.gnomon.api.agenda.services;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.gnomon.api.agenda.models.Agenda;
@@ -26,16 +22,13 @@ import com.gnomon.api.agenda.payloads.responses.AgendaEventSummary;
 import com.gnomon.api.agenda.repositories.AgendaEventRepository;
 import com.gnomon.api.agenda.repositories.AgendaRepository;
 import com.gnomon.api.exceptions.NotAllowedException;
-import com.gnomon.api.exceptions.ResourceNotFoundException;
 import com.gnomon.api.models.User;
-import com.gnomon.api.models.audits.UserDateAudit;
 import com.gnomon.api.payloads.responses.PagedResponse;
 import com.gnomon.api.repositories.UserRepository;
 
 import static org.springframework.data.jpa.domain.Specification.*;
 import static com.gnomon.api.agenda.utils.specs.AgendaEventSpecifications.*;
 import static com.gnomon.api.agenda.utils.specs.AgendaSpecifications.isVisibleByUser;
-import static com.gnomon.api.utils.specs.UserDateAuditSpecification.*;
 
 @Service
 public class AgendaEventService {
@@ -57,7 +50,7 @@ public class AgendaEventService {
 		this.agendaRepository = agendaRepository;
 	}
 	
-	public PagedResponse<Day> getAllEvents(Long userId, LocalDate from, LocalDate to, int page, int size){
+	public PagedResponse<?> getAllEvents(Long userId, LocalDate from, LocalDate to, int page, int size){
 		final Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "date");
 		final User user = userRepository.getOne(userId);
 		final List<Agenda> agendas = agendaRepository.findAll(where(isVisibleByUser(user)));
@@ -68,14 +61,7 @@ public class AgendaEventService {
 			);
 		
 		if(events.getNumberOfElements() == 0) {
-            return new PagedResponse<Day>(
-        		Collections.emptyList(), 
-        		events.getNumber(),
-        		events.getSize(), 
-        		events.getTotalElements(), 
-        		events.getTotalPages(), 
-        		events.isLast()
-    		);
+			return PagedResponse.emptyFromPage(events);
         }
 		
 		final List<Day> days = new ArrayList<Day>();

@@ -30,17 +30,26 @@ import java.net.URI;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
     AuthenticationManager authenticationManager;
 
-    @Autowired
     UserRepository userRepository;
     
-    @Autowired
     UserService userService;
 
-    @Autowired
     JwtTokenProvider tokenProvider;
+    
+    @Autowired
+    public AuthController(
+    		AuthenticationManager authenticationManager,
+    		UserRepository userRepository,
+    		UserService userService,
+    		JwtTokenProvider tokenProvider
+		) {
+    	this.authenticationManager = authenticationManager;
+    	this.userRepository = userRepository;
+    	this.userService = userService;
+    	this.tokenProvider = tokenProvider;
+	}
 
     @PostMapping("/signin")
     @Transactional

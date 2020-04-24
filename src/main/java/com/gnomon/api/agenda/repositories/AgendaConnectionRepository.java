@@ -14,9 +14,7 @@ public interface AgendaConnectionRepository extends
 	JpaSpecificationExecutor<AgendaConnection>
 {		
 	Optional<AgendaConnection> findByUserIdAndAgendaId(Long userId, Long agendaId);
-	
-	Optional<AgendaConnection> findByUserIdAndConnectionType(Long userId, AgendaConnectionType connectionType);
-	
+
 	Boolean existsByUserIdAndConnectionType(Long userId, AgendaConnectionType connectionType);
 
 	Boolean existsByUserIdAndAgendaId(Long userId, Long agendaId);

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gnomon.api.AppConstants;
 import com.gnomon.api.agenda.payloads.requests.AgendaEventRequest;
 import com.gnomon.api.agenda.payloads.responses.AgendaEventSummary;
-import com.gnomon.api.agenda.payloads.responses.Day;
 import com.gnomon.api.agenda.services.AgendaEventService;
 import com.gnomon.api.payloads.responses.ApiResponse;
 import com.gnomon.api.payloads.responses.PagedResponse;
@@ -48,7 +47,7 @@ public class AgendaEventController {
 	}
 	
 	@GetMapping("/agendas/events")
-	public PagedResponse<Day> getAll(
+	public PagedResponse<?> getAll(
 			@CurrentUser UserPrincipal currentUser,
 			@RequestParam(value = "from", defaultValue = "today") LocalDate from,
 			@RequestParam(value = "to", defaultValue = "endOfLife") LocalDate to,
