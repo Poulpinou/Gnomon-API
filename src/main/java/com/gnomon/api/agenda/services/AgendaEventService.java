@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.gnomon.api.agenda.models.Agenda;
+import com.gnomon.api.agenda.models.AgendaConnection;
 import com.gnomon.api.agenda.models.AgendaEvent;
+import com.gnomon.api.agenda.models.enums.AgendaConnectionType;
 import com.gnomon.api.agenda.payloads.responses.Day;
 import com.gnomon.api.agenda.payloads.requests.AgendaEventRequest;
 import com.gnomon.api.agenda.payloads.responses.AgendaEventSummary;
+import com.gnomon.api.agenda.repositories.AgendaConnectionRepository;
 import com.gnomon.api.agenda.repositories.AgendaEventRepository;
 import com.gnomon.api.agenda.repositories.AgendaRepository;
 import com.gnomon.api.exceptions.NotAllowedException;
+import com.gnomon.api.exceptions.ResourceNotFoundException;
 import com.gnomon.api.models.User;
 import com.gnomon.api.payloads.responses.PagedResponse;
 import com.gnomon.api.repositories.UserRepository;
@@ -39,15 +44,19 @@ public class AgendaEventService {
 	
 	private AgendaRepository agendaRepository;
 	
+	private AgendaConnectionRepository connectionrepository;
+	
 	@Autowired
 	public AgendaEventService(
 			AgendaEventRepository eventRepository, 
 			UserRepository userRepository,
-			AgendaRepository agendaRepository
+			AgendaRepository agendaRepository,
+			AgendaConnectionRepository connectionrepository
 	) {
 		this.eventRepository = eventRepository;
 		this.userRepository = userRepository;
 		this.agendaRepository = agendaRepository;
+		this.connectionrepository = connectionrepository;
 	}
 	
 	public PagedResponse<?> getAllEvents(Long userId, LocalDate from, LocalDate to, int page, int size){
@@ -143,6 +152,43 @@ public class AgendaEventService {
 		}
 		
 		eventRepository.delete(event);
+	}
+	
+	public void connectEventToAgenda(Long userId, Long agendaId, Long eventId) {
+		final AgendaConnection connection = connectionrepository.findByUserIdAndAgendaId(userId, agendaId)
+				.orElseThrow(() -> new ResourceNotFoundException("AgendaConnection", "userId | agendaId", userId + " | " + agendaId));
+		
+		if(connection.getConnectionType() == AgendaConnectionType.VIEWER) {
+			throw new NotAllowedException("user can't edit this agenda");
+		}
+		
+		final AgendaEvent event = eventRepository.getOne(eventId);
+		final Set<Agenda> agendas = event.getAgendas();
+		
+		agendas.add(connection.getAgenda());		
+		event.setAgendas(agendas);
+		
+		eventRepository.save(event);
+	}
+	
+	public void disconnectEventFromAgenda(Long userId, Long agendaId, Long eventId) {
+		final AgendaConnection connection = connectionrepository.findByUserIdAndAgendaId(userId, agendaId)
+				.orElseThrow(() -> new ResourceNotFoundException("AgendaConnection", "userId | agendaId", userId + " | " + agendaId));
+		
+		if(connection.getConnectionType() == AgendaConnectionType.VIEWER) {
+			throw new NotAllowedException("user can't edit this agenda");
+		}
+		
+		final AgendaEvent event = eventRepository.getOne(eventId);
+		
+		event.setAgendas(
+				event.getAgendas()
+				.stream()
+				.filter((agenda) -> agenda.getId() != agendaId)
+				.collect(Collectors.toSet())
+			);
+		
+		eventRepository.save(event);
 	}
 	
 }

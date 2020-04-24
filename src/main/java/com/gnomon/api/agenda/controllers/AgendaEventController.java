@@ -92,4 +92,22 @@ public class AgendaEventController {
 				.body(new ApiResponse(true, "Event successfully deleted"));
 	}
 	
+	@PostMapping("/agendas/{agendaId}/events/{eventId}")
+	@Transactional
+	public ResponseEntity<?> connectEventToAgenda(@CurrentUser UserPrincipal currentUser, @PathVariable Long agendaId, @PathVariable Long eventId){
+		agendaEventService.connectEventToAgenda(currentUser.getId(), agendaId, eventId);
+		
+		return ResponseEntity.ok()
+				.body(new ApiResponse(true, "Event successfully connected"));
+	}
+	
+	@DeleteMapping("/agendas/{agendaId}/events/{eventId}")
+	@Transactional
+	public ResponseEntity<?> disconnectEventFromAgenda(@CurrentUser UserPrincipal currentUser, @PathVariable Long agendaId, @PathVariable Long eventId){
+		agendaEventService.disconnectEventFromAgenda(currentUser.getId(), agendaId, eventId);
+		
+		return ResponseEntity.ok()
+				.body(new ApiResponse(true, "Event successfully disconnected"));
+	}
+	
 }
