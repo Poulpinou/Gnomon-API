@@ -7,7 +7,12 @@ import lombok.Data;
 @Data
 public class AgendaConnectionRequest {
 	@NotNull
+	private Long userId;
+	
+	@NotNull
 	private Long agendaId;
 	
-	private boolean shared;
+	private boolean owner = false;
+	
+	private boolean shown = true;
 }

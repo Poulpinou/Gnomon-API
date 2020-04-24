@@ -12,7 +12,7 @@ import com.gnomon.api.agenda.models.keys.AgendaConnectionKey;
 public interface AgendaConnectionRepository extends 
 	JpaRepository<AgendaConnection, AgendaConnectionKey>,
 	JpaSpecificationExecutor<AgendaConnection>
-{		
+{
 	Optional<AgendaConnection> findByUserIdAndAgendaId(Long userId, Long agendaId);
 
 	Boolean existsByUserIdAndConnectionType(Long userId, AgendaConnectionType connectionType);

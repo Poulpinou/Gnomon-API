@@ -44,19 +44,19 @@ public class AgendaEventService {
 	
 	private AgendaRepository agendaRepository;
 	
-	private AgendaConnectionRepository connectionrepository;
+	private AgendaConnectionRepository connectionRepository;
 	
 	@Autowired
 	public AgendaEventService(
 			AgendaEventRepository eventRepository, 
 			UserRepository userRepository,
 			AgendaRepository agendaRepository,
-			AgendaConnectionRepository connectionrepository
+			AgendaConnectionRepository connectionRepository
 	) {
 		this.eventRepository = eventRepository;
 		this.userRepository = userRepository;
 		this.agendaRepository = agendaRepository;
-		this.connectionrepository = connectionrepository;
+		this.connectionRepository = connectionRepository;
 	}
 	
 	public PagedResponse<?> getAllEvents(Long userId, LocalDate from, LocalDate to, int page, int size){
@@ -155,7 +155,7 @@ public class AgendaEventService {
 	}
 	
 	public void connectEventToAgenda(Long userId, Long agendaId, Long eventId) {
-		final AgendaConnection connection = connectionrepository.findByUserIdAndAgendaId(userId, agendaId)
+		final AgendaConnection connection = connectionRepository.findByUserIdAndAgendaId(userId, agendaId)
 				.orElseThrow(() -> new ResourceNotFoundException("AgendaConnection", "userId | agendaId", userId + " | " + agendaId));
 		
 		if(connection.getConnectionType() == AgendaConnectionType.VIEWER) {
@@ -172,7 +172,7 @@ public class AgendaEventService {
 	}
 	
 	public void disconnectEventFromAgenda(Long userId, Long agendaId, Long eventId) {
-		final AgendaConnection connection = connectionrepository.findByUserIdAndAgendaId(userId, agendaId)
+		final AgendaConnection connection = connectionRepository.findByUserIdAndAgendaId(userId, agendaId)
 				.orElseThrow(() -> new ResourceNotFoundException("AgendaConnection", "userId | agendaId", userId + " | " + agendaId));
 		
 		if(connection.getConnectionType() == AgendaConnectionType.VIEWER) {
