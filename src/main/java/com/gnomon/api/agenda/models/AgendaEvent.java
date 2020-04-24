@@ -28,7 +28,12 @@ public class AgendaEvent extends UserDateAudit {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToMany(mappedBy = "events")
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+			name = "agendas_events",
+			joinColumns = @JoinColumn(name = "event_id"),
+			inverseJoinColumns = @JoinColumn(name = "agenda_id")
+		)
 	private Set<Agenda> agendas;
 	
 	@NotBlank
@@ -39,15 +44,21 @@ public class AgendaEvent extends UserDateAudit {
 	@Size(max = 256)
 	private String description;
 	
-	@NotBlank
+	
 	@NonNull
 	LocalDateTime date;
 	
 	@Enumerated(EnumType.STRING)
 	RecurrenceRule recurrenceRule;
 	
-	@NotBlank
+	
 	LocalDateTime lastRecurrence;
+	
+	public AgendaEvent(String title, String description, LocalDateTime date) {
+		this.title = title;
+		this.description = description;
+		this.date = date;
+	}
 	
 	public LocalDate getDay() {
 		return date.toLocalDate();

@@ -39,17 +39,16 @@ public class Agenda extends UserDateAudit{
 	@OneToMany(mappedBy = "agenda")
 	private Set<AgendaConnection> connections;
 	
-	@ManyToMany
-	@JoinTable(
-		name = "agendas_events", 
-		joinColumns = @JoinColumn(name = "agenda_id"), 
-		inverseJoinColumns = @JoinColumn(name = "event_id")
-	)
+	@ManyToMany(mappedBy = "agendas", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<AgendaEvent> events;
 	
 	public Agenda(String name, String description, boolean isShared) {
 		this.name = name;
 		this.description = description;
 		this.shared = isShared;
+	}
+	
+	public void AddEvent(AgendaEvent event) {
+		events.add(event);
 	}
 }

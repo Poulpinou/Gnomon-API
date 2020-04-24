@@ -1,9 +1,12 @@
 package com.gnomon.api.agenda.payloads.requests;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 
@@ -17,6 +20,8 @@ public class AgendaEventRequest {
 	@Size(max = 256)
 	private String description;
 	
-	@NotBlank
+	@DateTimeFormat(pattern="dd-MMM-yyyy hh:mm:ss")
 	LocalDateTime date;
+	
+	private List<Long> agendaIds;
 }
