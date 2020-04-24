@@ -7,7 +7,15 @@ import com.gnomon.api.agenda.models.keys.AgendaConnectionKey;
 import com.gnomon.api.models.User;
 import com.gnomon.api.models.audits.DateAudit;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
 @Entity
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 @Table(name="agenda_connections")
 public class AgendaConnection extends DateAudit  {
 	
@@ -17,67 +25,26 @@ public class AgendaConnection extends DateAudit  {
 	@ManyToOne
 	@MapsId("user_id")
 	@JoinColumn(name="user_id")
+	@NonNull
 	private User user;
 	
 	@ManyToOne
 	@MapsId("agenda_id")
 	@JoinColumn(name="agenda_id")
+	@NonNull
 	private Agenda agenda;
 	
-	private Boolean isShown;
+	private boolean shown;
 	
-	@Enumerated(EnumType.ORDINAL)
-	AgendaConnectionType connectionType;
-	
-	public AgendaConnection() {}
+	@NonNull
+	@Enumerated(EnumType.STRING)
+	private AgendaConnectionType connectionType;
 	
 	public AgendaConnection(User user, Agenda agenda, AgendaConnectionType connectionType, boolean isShown) {
 		this.user = user;
 		this.agenda = agenda;
 		this.connectionType = connectionType;
-		this.isShown = isShown;
+		this.shown = isShown;
 		this.id = new AgendaConnectionKey(user.getId(), agenda.getId());
 	}
-
-	public AgendaConnectionKey getId() {
-		return id;
-	}
-
-	public void setId(AgendaConnectionKey id) {
-		this.id = id;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public Agenda getAgenda() {
-		return agenda;
-	}
-
-	public void setAgenda(Agenda agenda) {
-		this.agenda = agenda;
-	}
-
-	public AgendaConnectionType getConnectionType() {
-		return connectionType;
-	}
-
-	public void setConnectionType(AgendaConnectionType connectionType) {
-		this.connectionType = connectionType;
-	}
-
-	public Boolean isShown() {
-		return isShown;
-	}
-
-	public void setShown(Boolean isShown) {
-		this.isShown = isShown;
-	}
-	
-	
 }

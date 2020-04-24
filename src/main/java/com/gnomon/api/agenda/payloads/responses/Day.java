@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Data;
+
+@Data
 public class Day implements Comparable<Day> {
 	
 	LocalDate date;
@@ -16,22 +19,6 @@ public class Day implements Comparable<Day> {
 	
 	public Day(LocalDate date, List<AgendaEventSummary> events) {
 		this.date = date;
-		this.events = events;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
-
-	public List<AgendaEventSummary> getEvents() {
-		return events;
-	}
-
-	public void setEvents(List<AgendaEventSummary> events) {
 		this.events = events;
 	}
 

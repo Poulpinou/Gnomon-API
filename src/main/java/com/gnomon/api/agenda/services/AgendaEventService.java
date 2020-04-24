@@ -3,6 +3,7 @@ package com.gnomon.api.agenda.services;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,50 +14,67 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.gnomon.api.agenda.models.Agenda;
 import com.gnomon.api.agenda.models.AgendaEvent;
 import com.gnomon.api.agenda.payloads.responses.Day;
+import com.gnomon.api.agenda.payloads.requests.AgendaEventRequest;
 import com.gnomon.api.agenda.payloads.responses.AgendaEventSummary;
-import com.gnomon.api.agenda.repositories.AgendaConnectionRepository;
 import com.gnomon.api.agenda.repositories.AgendaEventRepository;
+import com.gnomon.api.agenda.repositories.AgendaRepository;
+import com.gnomon.api.exceptions.NotAllowedException;
+import com.gnomon.api.models.User;
 import com.gnomon.api.payloads.responses.PagedResponse;
+import com.gnomon.api.repositories.UserRepository;
+
+import static org.springframework.data.jpa.domain.Specification.*;
+import static com.gnomon.api.agenda.utils.specs.AgendaEventSpecifications.*;
+import static com.gnomon.api.agenda.utils.specs.AgendaSpecifications.isVisibleByUser;
 
 @Service
 public class AgendaEventService {
+		
+	private AgendaEventRepository eventRepository;
+	
+	private UserRepository userRepository;
+	
+	private AgendaRepository agendaRepository;
 	
 	@Autowired
-	AgendaEventRepository eventRepository;
+	public AgendaEventService(
+			AgendaEventRepository eventRepository, 
+			UserRepository userRepository,
+			AgendaRepository agendaRepository
+	) {
+		this.eventRepository = eventRepository;
+		this.userRepository = userRepository;
+		this.agendaRepository = agendaRepository;
+	}
 	
-	@Autowired
-	private AgendaConnectionRepository connectionRepository;
-	
-	public PagedResponse<Day> getAllEvents(Long userId, LocalDate from, LocalDate to, int page, int size){
-		List<Long> agendaIds = connectionRepository.findAgendaIdsByUserId(userId);
-		Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "date");
-				
-		Page<AgendaEvent> events = eventRepository.getEventsFromAgendasBetweenDates(agendaIds, from.atStartOfDay(), to.atStartOfDay().plusDays(1), pageable);
+	public PagedResponse<?> getAllEvents(Long userId, LocalDate from, LocalDate to, int page, int size){
+		final Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "date");
+		final User user = userRepository.getOne(userId);
+		final List<Agenda> agendas = agendaRepository.findAll(where(isVisibleByUser(user)));
+		final Page<AgendaEvent> events = eventRepository.findAll(
+				where(byAgendas(agendas)
+						.and(isBetweenDates(from.atStartOfDay(), to.atStartOfDay().plusDays(1)))
+				),pageable
+			);
 		
 		if(events.getNumberOfElements() == 0) {
-            return new PagedResponse<Day>(
-        		Collections.emptyList(), 
-        		events.getNumber(),
-        		events.getSize(), 
-        		events.getTotalElements(), 
-        		events.getTotalPages(), 
-        		events.isLast()
-    		);
+			return PagedResponse.emptyFromPage(events);
         }
 		
-		List<Day> days = new ArrayList<Day>();
+		final List<Day> days = new ArrayList<Day>();
 		
 		events.stream()
-			.collect(Collectors.groupingBy(AgendaEvent::getDate))
+			.collect(Collectors.groupingBy(AgendaEvent::getDay))
 			.forEach((date, eventList) -> {
 				days.add(
 					new Day(
 						date, 
-						eventList.stream().map(event -> {
-							return new AgendaEventSummary(event);
-						}).collect(Collectors.toList())
+						eventList.stream()
+							.map(AgendaEventSummary::new)
+							.collect(Collectors.toList())
 					)
 				);
 			});
@@ -72,4 +90,59 @@ public class AgendaEventService {
     		events.isLast()
 		);
 	}
+	
+	public AgendaEventSummary getEventById(Long userId, Long eventId) {		
+		//TODO check if user is allowed to see the event
+		//final User user = userRepository.getOne(userId);
+		
+		final AgendaEvent event = eventRepository.getOne(eventId);
+		
+		return new AgendaEventSummary(event);
+	}
+	
+	public void createEvent(Long userId, AgendaEventRequest request) {
+		//TODO check if user is allowed to create the event
+		//final User user = userRepository.getOne(userId);
+		
+		final AgendaEvent event = new AgendaEvent(
+			request.getTitle(),
+			request.getDescription(),
+			request.getDate()
+		);
+		
+		final List<Agenda> agendas = agendaRepository.findByIdIn(request.getAgendaIds());
+		
+		event.setAgendas(new HashSet<Agenda>(agendas));
+		
+		eventRepository.save(event);
+	}
+	
+	public void updateEvent(Long userId, Long eventId, AgendaEventRequest request) {
+		final AgendaEvent event = eventRepository.getOne(eventId);
+		
+		if(event.getCreatedBy() != userId) {
+			throw new NotAllowedException("user can't update this event");
+		}
+		
+		event.setTitle(request.getTitle());
+		event.setDescription(request.getDescription());
+		event.setDate(request.getDate());
+		
+		final List<Agenda> agendas = agendaRepository.findByIdIn(request.getAgendaIds());
+		
+		event.setAgendas(new HashSet<Agenda>(agendas));
+		
+		eventRepository.save(event);
+	}
+	
+	public void deleteEvent(Long userId, Long eventId) {
+		final AgendaEvent event = eventRepository.getOne(eventId);
+		
+		if(event.getCreatedBy() != userId) {
+			throw new NotAllowedException("user can't delete this event");
+		}
+		
+		eventRepository.delete(event);
+	}
+	
 }

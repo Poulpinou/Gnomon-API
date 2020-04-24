@@ -17,24 +17,21 @@ import com.gnomon.api.security.UserPrincipal;
 public class AuditingConfig {
 	@Bean
     public AuditorAware<Long> auditorProvider() {
-        return new SpringSecurityAuditAwareImpl();
-    }
-}
+        return new AuditorAware<Long> () {
+        	
+            public Optional<Long> getCurrentAuditor() {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-class SpringSecurityAuditAwareImpl implements AuditorAware<Long> {
+                if (authentication == null ||
+                        !authentication.isAuthenticated() ||
+                        authentication instanceof AnonymousAuthenticationToken) {
+                    return Optional.empty();
+                }
 
-    @Override
-    public Optional<Long> getCurrentAuditor() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null ||
-                !authentication.isAuthenticated() ||
-                authentication instanceof AnonymousAuthenticationToken) {
-            return Optional.empty();
-        }
-
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        
-        return Optional.ofNullable(userPrincipal.getId());
+                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                
+                return Optional.ofNullable(userPrincipal.getId());
+            }
+        };
     }
 }

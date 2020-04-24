@@ -2,11 +2,9 @@ package com.gnomon.api.services;
 
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.gnomon.api.agenda.repositories.AgendaRepository;
 import com.gnomon.api.agenda.services.AgendaService;
 import com.gnomon.api.exceptions.AppException;
 import com.gnomon.api.models.Role;
@@ -19,20 +17,25 @@ import com.gnomon.api.repositories.UserRepository;
 @Service
 public class UserService {
 	
-	@Autowired
-	UserRepository userRepository;	
+	private UserRepository userRepository;	
 	
-	@Autowired
-    RoleRepository roleRepository;
+	private RoleRepository roleRepository;
 	
-	@Autowired
-	AgendaRepository agendaRepository;
+	private AgendaService agendaService;
 	
-	@Autowired
-	AgendaService agendaService;
+	private PasswordEncoder passwordEncoder;
 	
-	@Autowired
-    PasswordEncoder passwordEncoder;
+	public UserService(
+			UserRepository userRepository, 
+			RoleRepository roleRepository,
+			AgendaService agendaService,
+			PasswordEncoder passwordEncoder
+		) {
+		this.userRepository = userRepository;
+		this.roleRepository = roleRepository;
+		this.agendaService = agendaService;
+		this.passwordEncoder = passwordEncoder;
+	}
 	
 	public User createAccount(SignUpRequest signUpRequest) {
 		User user = new User(
@@ -44,7 +47,7 @@ public class UserService {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Role userRole = roleRepository.findByName(RoleName.USER)
-                .orElseThrow(() -> new AppException("User Role not set."));
+                .orElseThrow(() -> new AppException("Doesn't exist"));
 
         user.setRoles(Collections.singleton(userRole));
         

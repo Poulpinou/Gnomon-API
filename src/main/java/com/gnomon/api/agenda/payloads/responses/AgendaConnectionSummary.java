@@ -1,50 +1,36 @@
 package com.gnomon.api.agenda.payloads.responses;
 
+import com.gnomon.api.agenda.models.AgendaConnection;
 import com.gnomon.api.agenda.models.enums.AgendaConnectionType;
+import com.gnomon.api.payloads.responses.DatedResponse;
 import com.gnomon.api.payloads.responses.UserSummary;
 
-public class AgendaConnectionSummary {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class AgendaConnectionSummary extends DatedResponse<AgendaConnection> {
+	
 	private UserSummary user;
 	
 	private AgendaSummary agenda;
 	
-	private String connectionType;
+	private AgendaConnectionType connectionType;
 	
-	private Boolean shown;
-
-	public Boolean isShown() {
-		return shown;
-	}
-
-	public void setShown(Boolean shown) {
-		this.shown = shown;
-	}
-
-	public UserSummary getUser() {
-		return user;
-	}
-
-	public void setUser(UserSummary user) {
-		this.user = user;
-	}
-
-	public AgendaSummary getAgenda() {
-		return agenda;
-	}
-
-	public void setAgenda(AgendaSummary agenda) {
-		this.agenda = agenda;
-	}
-
-	public String getConnectionType() {
-		return connectionType;
-	}
-
-	public void setConnectionType(String connectionType) {
-		this.connectionType = connectionType;
+	private boolean shown;	
+	
+	public AgendaConnectionSummary(AgendaConnection connection) {
+		super(connection);
 	}
 	
-	public void setConnectionType(AgendaConnectionType connectionType) {
-		this.connectionType = connectionType.toString();
+	@Override
+	protected void mapObjectToResponse(AgendaConnection connection) {
+		super.mapObjectToResponse(connection);
+		
+		this.user = new UserSummary(connection.getUser());
+		this.agenda = new AgendaSummary(connection.getAgenda());
+		this.connectionType = connection.getConnectionType();
+		this.shown = connection.isShown();
 	}
 }
