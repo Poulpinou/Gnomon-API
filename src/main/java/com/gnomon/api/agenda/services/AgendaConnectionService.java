@@ -5,7 +5,6 @@ import static org.springframework.data.jpa.domain.Specification.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.gnomon.api.agenda.models.Agenda;
 import com.gnomon.api.agenda.models.AgendaConnection;
@@ -20,27 +19,19 @@ import com.gnomon.api.exceptions.ResourceNotFoundException;
 import com.gnomon.api.models.User;
 import com.gnomon.api.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import static com.gnomon.api.agenda.utils.specs.AgendaConnectionSpecifications.*;
 
 @Service
+@RequiredArgsConstructor
 public class AgendaConnectionService {
 	
-	private AgendaConnectionRepository connectionRepository;
+	private final AgendaConnectionRepository connectionRepository;
 	
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	
-	private AgendaRepository agendaRepository;
-	
-	@Autowired
-	public AgendaConnectionService(
-			AgendaConnectionRepository connectionRepository, 
-			UserRepository userRepository,
-			AgendaRepository agendaRepository
-		) {
-		this.connectionRepository = connectionRepository;
-		this.userRepository = userRepository;
-		this.agendaRepository = agendaRepository;
-	}
+	private final AgendaRepository agendaRepository;
 	
 	public List<AgendaConnectionSummary> getAllConnectionsByUserId(Long userId){
 		final User user = userRepository.getOne(userId);

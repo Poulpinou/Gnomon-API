@@ -3,7 +3,6 @@ package com.gnomon.api.agenda.services;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.data.jpa.domain.Specification.*;
 import org.springframework.stereotype.Service;
 
@@ -22,29 +21,19 @@ import com.gnomon.api.exceptions.ResourceNotFoundException;
 import com.gnomon.api.models.User;
 import com.gnomon.api.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AgendaService {
 
-	private AgendaRepository agendaRepository;
+	private final AgendaRepository agendaRepository;
 	
-	private AgendaConnectionRepository connectionRepository;
+	private final AgendaConnectionRepository connectionRepository;
 	
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	
-	private AgendaConnectionService connectionService;
-	
-	@Autowired
-	public AgendaService(
-			AgendaRepository agendaRepository,
-			AgendaConnectionRepository connectionRepository,
-			UserRepository userRepository,
-			AgendaConnectionService connectionService
-		){
-		this.agendaRepository = agendaRepository;
-		this.connectionRepository = connectionRepository;
-		this.userRepository = userRepository;
-		this.connectionService = connectionService;
-	}
+	private final AgendaConnectionService connectionService;
 	
 	public List<AgendaSummary> getAllAgendasByUserId(Long userId){
 		final User user = userRepository.getOne(userId);
@@ -75,7 +64,7 @@ public class AgendaService {
 		return new AgendaSummary(agenda);
 	}
 	
-	public void createAgenda(Long userId, AgendaRequest request) throws BadRequestException {
+	public Agenda createAgenda(Long userId, AgendaRequest request) throws BadRequestException {
 		Agenda agenda = new Agenda(
         	request.getName(),
         	request.getDescription(),
@@ -85,6 +74,8 @@ public class AgendaService {
 		agenda = agendaRepository.save(agenda);
 		
 		connectionService.createConnection(userId, agenda, AgendaConnectionType.OWNER);
+	
+		return agenda;
 	}
 	
 	public void updateAgenda(Long userId, Long agendaId, AgendaRequest request) throws ResourceNotFoundException, NotAllowedException {
