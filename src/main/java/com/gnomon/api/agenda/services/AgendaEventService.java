@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,33 +30,23 @@ import com.gnomon.api.models.User;
 import com.gnomon.api.payloads.responses.PagedResponse;
 import com.gnomon.api.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import static org.springframework.data.jpa.domain.Specification.*;
 import static com.gnomon.api.agenda.utils.specs.AgendaEventSpecifications.*;
 import static com.gnomon.api.agenda.utils.specs.AgendaSpecifications.isVisibleByUser;
 
 @Service
+@RequiredArgsConstructor
 public class AgendaEventService {
 		
-	private AgendaEventRepository eventRepository;
+	private final AgendaEventRepository eventRepository;
 	
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	
-	private AgendaRepository agendaRepository;
+	private final AgendaRepository agendaRepository;
 	
-	private AgendaConnectionRepository connectionRepository;
-	
-	@Autowired
-	public AgendaEventService(
-			AgendaEventRepository eventRepository, 
-			UserRepository userRepository,
-			AgendaRepository agendaRepository,
-			AgendaConnectionRepository connectionRepository
-	) {
-		this.eventRepository = eventRepository;
-		this.userRepository = userRepository;
-		this.agendaRepository = agendaRepository;
-		this.connectionRepository = connectionRepository;
-	}
+	private final AgendaConnectionRepository connectionRepository;
 	
 	public PagedResponse<?> getAllEvents(Long userId, LocalDate from, LocalDate to, int page, int size){
 		final Pageable pageable = PageRequest.of(page, size, Sort.Direction.ASC, "date");
