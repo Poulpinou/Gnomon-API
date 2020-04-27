@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,10 +49,10 @@ public class AgendaConnectionController {
 				.body(new ApiResponse(true, "Event successfully connected"));
 	}
 	
-	@DeleteMapping("/{agendaId}/{userId}")
+	@DeleteMapping("/{agendaId}")
 	@Transactional
-	public ResponseEntity<?> disconnectAgenda(@CurrentUser UserPrincipal currentUser, @RequestParam Long agendaId, @RequestParam Long userId){
-		connectionService.disconnectAgenda(currentUser.getId(), userId, agendaId);
+	public ResponseEntity<?> disconnectAgenda(@CurrentUser UserPrincipal currentUser, @PathVariable Long agendaId, @RequestParam(name = "userId", defaultValue = "0") Long userId){
+		connectionService.disconnectAgenda(currentUser.getId(), userId == 0 ? currentUser.getId() : userId, agendaId);
 		
 		return ResponseEntity.ok()
 				.body(new ApiResponse(true, "Event successfully disconnected"));
