@@ -10,17 +10,31 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.NaturalId;
 
+import com.gnomon.api.agenda.models.AgendaConnection;
 import com.gnomon.api.models.audits.DateAudit;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.ToString;
+
 @Entity
-@Table(name="users", uniqueConstraints = {
-	@UniqueConstraint(columnNames = {
-			"name"
-	}),
-	@UniqueConstraint(columnNames = {
-			"email"
-	})
-})
+@Table(
+	name="users", 
+	uniqueConstraints = {
+		@UniqueConstraint(columnNames = {
+				"name"
+		}),
+		@UniqueConstraint(columnNames = {
+				"email"
+		})
+	}
+)
+@Data
+@EqualsAndHashCode(callSuper = false, exclude = {"agendaConnections"})
+@NoArgsConstructor
+@ToString(exclude = {"agendaConnections"})
 public class User extends DateAudit {
 	
 	@Id
@@ -29,16 +43,19 @@ public class User extends DateAudit {
 	
 	@NotBlank
 	@Size(min = 3, max = 32)
+	@NonNull
 	private String name;
 	
 	@NaturalId
 	@NotBlank
 	@Size(min = 3, max = 64)
 	@Email
+	@NonNull
 	private String email;
 	
 	@NotBlank
 	@Size(min = 6, max=64)
+	@NonNull
 	private String password;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -49,53 +66,12 @@ public class User extends DateAudit {
 	)
 	private Set<Role> roles = new HashSet<Role>();
 	
-	
-	public User() {}
-	
-	public User(String name, String email, String password) {
-		this.name = name;
-		this.email = email;
-		this.password = password;
-	}
+	@OneToMany(mappedBy = "user")
+	private Set<AgendaConnection> agendaConnections;
 
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
+	public User(String name, String email, String password) {	
+		this.name = name;	
+		this.email = email;	
+		this.password = password;	
 	}
 }
